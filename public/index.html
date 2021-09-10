@@ -41,19 +41,21 @@
                 instructions:     true,
                 loader:           true
             },
-            onSceneInit: (gl) => {
-                console.log('init', gl);
+            onSceneInit: (canvasContext) => {
+                console.log('init', canvasContext);
             },
-            onReady: (gl) => {
-                console.log('ready', gl);
-                if (gl?.scene) {
+            onReady: (canvasContext) => {
+                console.log(canvasContext)
+
+                if (canvasContext && canvasContext.scene) {
+                    const {scene} = canvasContext;
                     // Main group is the one which gesture controls applied to
-                    gl.scene.children[0].children[1].children[0].children[0].name = "MainGroup";
-                    const mainGroup = gl.scene.getObjectByName('MainGroup')
+                    scene.children[0].children[1].children[0].children[0].name = "MainGroup";
+                    const mainGroup = scene.getObjectByName('MainGroup')
 
                     // Disable default Light
-                    gl.scene.children[0].children[0].visible = false;
-                    
+                    scene.children[0].children[0].visible = false;
+
                     // Add custom Light
                     mainGroup.add(new Geenee.THREE.AmbientLight(0x5555ff, 5))
 
@@ -83,8 +85,11 @@
                     helmets.parent.remove(helmets)
                     const newGroup = new Geenee.THREE.Group()
                     newGroup.add(helmets)
-                    Geenee.activeSceneModel.emitter.addListener('on-model-click', (_group=newGroup) => {
-                        console.log('Model clicked', _group)
+                    Geenee.activeSceneModel.emitter.addListener('on-model-click', (intersections) => {
+                        console.log('Model clicked', intersections)
+
+                        Geenee.activeSceneModel.experienceStarted ? Geenee.activeSceneModel.stopExp() : Geenee.activeSceneModel.renewSlam() // You can set new point manually Geenee.activeSceneModel.renewSlam(x, y )
+
                     })
                     helmetParent.add(newGroup);
 
@@ -97,11 +102,13 @@
                     // Call event
                     Geenee.activeSceneModel.emitter.emit('custom-event', {current: 'value'})
 
+
+
                     // Remove custom event listener
                     // Geenee.activeSceneModel.emitter.removeListener('custom-event', emitEvent)
                 }
             },
-            onRender: (gl) => {
+            onRender: (canvasContext) => {
                 // console.log('render', gl);
             }
         }]
