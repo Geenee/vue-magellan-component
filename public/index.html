@@ -46,6 +46,55 @@
             },
             onReady: (gl) => {
                 console.log('ready', gl);
+                if (gl?.scene) {
+                    // Main group is the one which gesture controls applied to
+                    gl.scene.children[0].children[1].children[0].children[0].name = "MainGroup";
+                    const mainGroup = gl.scene.getObjectByName('MainGroup')
+
+                    // Disable default Light
+                    gl.scene.children[0].children[0].visible = false;
+                    
+                    // Add custom Light
+                    mainGroup.add(new Geenee.THREE.AmbientLight(0x5555ff, 5))
+
+                    mainGroup.children[0].children[0].name = "Helmets";
+                    const helmets = mainGroup.getObjectByName("Helmets")
+                    helmets.position.y = 7;
+
+                    const geometry = new Geenee.THREE.BoxGeometry( 3, 3, 3 );
+                    const material = new Geenee.THREE.MeshPhongMaterial( {color: 0x49ef4} );
+                    const cube = new Geenee.THREE.Mesh( geometry, material );
+                    cube.name = "Cube"
+                    cube.position.set(15, -5, 0)
+
+                    const cube2 = cube.clone();
+                    cube2.material = new Geenee.THREE.MeshPhongMaterial( {color: 0xf40404 } );
+                    cube2.name = "Cube2"
+                    cube.position.set(-15, -5, 0)
+
+                    helmets.add(cube)
+                    helmets.add(cube2)
+                    helmets.remove(mainGroup.getObjectByName("Ironman"))
+
+                    // List of events
+                    console.log(Geenee.activeSceneModel.emitter._events)
+
+                    Geenee.activeSceneModel.emitter.addListener('on-model-click', () => {
+                        console.log('Model clicked')
+                    })
+
+                    // Add custom event listener
+                    const emitEvent = (e) => {
+                        console.log('Custom event', e)
+                    }
+                    Geenee.activeSceneModel.emitter.addListener('custom-event', emitEvent)
+
+                    // Call event
+                    Geenee.activeSceneModel.emitter.emit('custom-event', {current: 'value'})
+
+                    // Remove custom event listener
+                    // Geenee.activeSceneModel.emitter.removeListener('custom-event', emitEvent)
+                }
             },
             onRender: (gl) => {
                 // console.log('render', gl);
