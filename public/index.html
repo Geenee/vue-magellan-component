@@ -79,9 +79,14 @@
                     // List of events
                     console.log(Geenee.activeSceneModel.emitter._events)
 
-                    Geenee.activeSceneModel.emitter.addListener('on-model-click', () => {
-                        console.log('Model clicked')
+                    const helmetParent = helmets.parent;
+                    helmets.parent.remove(helmets)
+                    const newGroup = new Geenee.THREE.Group()
+                    newGroup.add(helmets)
+                    Geenee.activeSceneModel.emitter.addListener('on-model-click', (_group=newGroup) => {
+                        console.log('Model clicked', _group)
                     })
+                    helmetParent.add(newGroup);
 
                     // Add custom event listener
                     const emitEvent = (e) => {
