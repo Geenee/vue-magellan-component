@@ -37,6 +37,7 @@
                     }
                 }
             },
+            disableDefaultCanvasClick: true,
             customUI: {
                 instructions:     true,
                 loader:           true
@@ -85,13 +86,19 @@
                     helmets.parent.remove(helmets)
                     const newGroup = new Geenee.THREE.Group()
                     newGroup.add(helmets)
+
+                    Geenee.activeSceneModel.startSlamExperience()
                     Geenee.activeSceneModel.emitter.addListener('on-model-click', (intersections) => {
                         console.log('Model clicked', intersections)
 
-                        Geenee.activeSceneModel.experienceStarted ? Geenee.activeSceneModel.stopExp() : Geenee.activeSceneModel.renewSlam() // You can set new point manually Geenee.activeSceneModel.renewSlam(x, y )
+                        Geenee.activeSceneModel.stopExp()
 
                     })
                     helmetParent.add(newGroup);
+
+                    document.addEventListener('click', (e) => {
+                        Geenee.activeSceneModel.startSlamExperience(e.clientX, e.clientY)
+                    })
 
                     // Add custom event listener
                     const emitEvent = (e) => {
