@@ -1,126 +1,88 @@
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-      <link href="/main.css" rel="stylesheet">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-  </head>
-  <body>
+<!doctype html><html><head><title>Geenee Get Started</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link href="./main.css" rel="stylesheet"></head><body><geenee-magellan></geenee-magellan><script>const baseConfig = [{
+        id: 1,
+        scene_experience_type: 'slam',
 
-    <div id="app"></div>
-    <script src="/magellan.js" async defer></script>
-    <geenee-magellan></geenee-magellan>
-    <script>
-        const baseConfig = [{
-            id:                    1,
-            scene_experience_type: 'slam',
+        projectId: 11,
 
-            projectId: 11,
+        arModel: {
+            url: '/maps.glb',
+            id: 1,
+            body: {
+                model: {
+                    url: '/maps.glb',
 
-            arModel: {
-                url:  '/helmets.glb',
-                id:   1,
-                body: {
-                    model: {
-                        url:   '/helmets.glb',
-                        scale: {
-                            x: 0.4,
-                            y: 0.4,
-                            z: 0.4
-                        },
-                        translate: {
-                            x: 1,
-                            y: 2,
-                            z: 1
-                        }
+                    scale: {
+                        x: 0.04,
+                        y: 0.04,
+                        z: 0.04
+                    },
+
+                    translate: {
+                        x: 0,
+                        y: 0,
+                        z: 0
                     }
                 }
-            },
-            disableDefaultCanvasClick: true,
-            customUI: {
-                instructions:     true,
-                loader:           true
-            },
-            onSceneInit: (canvasContext) => {
-                console.log('init', canvasContext);
-            },
-            onReady: (canvasContext) => {
-                console.log(canvasContext)
-
-                if (canvasContext && canvasContext.scene) {
-                    const {scene} = canvasContext;
-                    // Main group is the one which gesture controls applied to
-                    scene.children[0].children[1].children[0].children[0].name = "MainGroup";
-                    const mainGroup = scene.getObjectByName('MainGroup')
-
-                    // Disable default Light
-                    scene.children[0].children[0].visible = false;
-
-                    // Add custom Light
-                    mainGroup.add(new Geenee.THREE.AmbientLight(0x5555ff, 5))
-
-                    mainGroup.children[0].children[0].name = "Helmets";
-                    const helmets = mainGroup.getObjectByName("Helmets")
-                    helmets.position.y = 7;
-
-                    const geometry = new Geenee.THREE.BoxGeometry( 3, 3, 3 );
-                    const material = new Geenee.THREE.MeshPhongMaterial( {color: 0x49ef4} );
-                    const cube = new Geenee.THREE.Mesh( geometry, material );
-                    cube.name = "Cube"
-                    cube.position.set(15, -5, 0)
-
-                    const cube2 = cube.clone();
-                    cube2.material = new Geenee.THREE.MeshPhongMaterial( {color: 0xf40404 } );
-                    cube2.name = "Cube2"
-                    cube.position.set(-15, -5, 0)
-
-                    helmets.add(cube)
-                    helmets.add(cube2)
-                    helmets.remove(mainGroup.getObjectByName("Ironman"))
-
-                    // List of events
-                    console.log(Geenee.activeSceneModel.emitter._events)
-
-                    const helmetParent = helmets.parent;
-                    helmets.parent.remove(helmets)
-                    const newGroup = new Geenee.THREE.Group()
-                    newGroup.add(helmets)
-
-                    // Geenee.activeSceneModel.startSlamExperience()
-                    Geenee.activeSceneModel.emitter.addListener('on-model-click', (intersections) => {
-                        console.log('Model clicked', intersections)
-
-                        Geenee.activeSceneModel.stopExp()
-
-                    })
-                    helmetParent.add(newGroup);
-
-                    document.addEventListener('click', (e) => {
-                        Geenee.activeSceneModel.startSlamExperience(e.clientX, e.clientY)
-                    })
-
-                    // Add custom event listener
-                    const emitEvent = (e) => {
-                        console.log('Custom event', e)
-                    }
-                    Geenee.activeSceneModel.emitter.addListener('custom-event', emitEvent)
-
-                    // Call event
-                    Geenee.activeSceneModel.emitter.emit('custom-event', {current: 'value'})
-
-
-
-                    // Remove custom event listener
-                    // Geenee.activeSceneModel.emitter.removeListener('custom-event', emitEvent)
-                }
-            },
-            onRender: (canvasContext) => {
-                // console.log('render', gl);
             }
-        }]
-        window.magellanConfig = baseConfig;
-    </script>
-    <!-- built files will be auto injected -->
-  </body>
-</html>
+        },
+        disableDefaultCanvasClick: true,
+        customUI: {
+            instructions: true,
+            loader: true
+        },
+
+        onSceneInit: (canvasContext) => {
+            console.log(canvasContext)
+        },
+        onReady: (canvasContext) => {
+            console.log('canvasContext', canvasContext)
+            //
+            if (canvasContext && canvasContext.scene) {
+
+                document.addEventListener('click', (e) => {
+                    if (!Geenee.activeSceneModel.experienceStarted) {
+                        Geenee.activeSceneModel.startSlamExperience(e.clientX, e.clientY)
+                    }
+                })
+
+                //
+                //initial config is
+                //const defaultOutLineProps = {
+                //   blendFunction:    BlendFunction.SCREEN, // set this to BlendFunction.ALPHA for dark outline,
+                //           patternTexture:   null, // a pattern textur,
+                //           // edgeStrength:2.5 } // the edge strengt,
+                //           pulseSpeed:       0.0, // a pulse speed. A value of zero disables the pulse effec,
+                //           // visibleEdgeColor:0xffffff } // the color of visible edge,
+                //           hiddenEdgeColor:  0x22090a, // the color of hidden edge,
+                //           width:            Resizer.AUTO_SIZE, // render widt,
+                //           height:           Resizer.AUTO_SIZE, // render heigh,
+                //           kernelSize:       KernelSize.LARGE, // blur kernel siz,
+                //           blur:             false, // whether the outline should be blurre,
+                //           xRay:             true, // i
+                //           visibleEdgeColor: 'white',
+                //           edgeStrength:     100
+                // };
+                //way to override config
+                window.setOutlineProps({
+                    hiddenEdgeColor: 'red',
+                    visibleEdgeColor: 0x22090a
+                });
+
+
+
+                window.Geenee.activeSceneModel.emitter.addListener("on-model-click",
+                    (intersections) => {
+                        console.log("Model clicked", intersections);
+                        if (intersections.length > 0) {
+                            //to remove outline = pass null
+                            window.outlineObjects([intersections[0].object]);
+                        }
+                    })
+            }
+        },
+        onRender: (canvasContext) => {
+
+
+        }
+    }]
+    window.magellanConfig = baseConfig;</script><script src="./magellan.js"></script></body></html>
